@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mira - Growth Analytics - May 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --dark:#07161a;--teal:#003B44;--teal-mid:#00525f;--cyan:#00CAD8;
+  --cyan-dim:rgba(0,202,216,0.1);--cyan-border:rgba(0,202,216,0.28);
+  --surface:#f3f8f9;--white:#fff;--ink:#0d1f22;--ink2:#3d6068;
+  --muted:#7a9ea5;--faint:#e4edef;--border:rgba(0,59,68,0.1);
+  --border-s:rgba(0,59,68,0.06);--green:#00936e;--red:#d94040;--amber:#c47e00;
+}
+html{font-size:16px;}
+body{background:var(--surface);color:var(--ink);font-family:'DM Sans',sans-serif;line-height:1.5;min-height:100vh;}
+.topbar{background:var(--dark);height:56px;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;}
+.topbar-logo img{height:26px;display:block;}
+.topbar-meta{font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.06em;text-transform:uppercase;}
+.tabs-bar{background:var(--teal);display:flex;align-items:stretch;padding:0 2rem;position:sticky;top:56px;z-index:190;border-bottom:1px solid rgba(0,0,0,0.15);overflow-x:auto;}
+.tab-btn{background:none;border:none;color:rgba(255,255,255,0.38);font-family:'DM Sans',sans-serif;font-size:11.5px;font-weight:500;padding:13px 13px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s,border-color .15s;white-space:nowrap;}
+.tab-btn:hover{color:rgba(255,255,255,0.7);}
+.tab-btn.active{color:var(--cyan);border-bottom-color:var(--cyan);}
+.tab-panel{display:none;}.tab-panel.active{display:block;}
+.page{max-width:1020px;margin:0 auto;padding:2.25rem 2.5rem 6rem;}
+.sec-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);display:flex;align-items:center;gap:10px;margin-bottom:1rem;}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--border-s);}
+.page-hero{padding:2rem 0 1.5rem;border-bottom:1px solid var(--border-s);margin-bottom:1.75rem;}
+.eyebrow{font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--cyan);margin-bottom:8px;}
+.page-hero h1{font-size:28px;font-weight:700;line-height:1.2;margin-bottom:8px;}
+.page-hero p{font-size:13px;color:var(--ink2);}
+.exec-strip{background:var(--dark);border-radius:10px;display:grid;grid-template-columns:repeat(4,1fr);margin-bottom:2rem;}
+.exec-item{padding:1.4rem 1.6rem;border-right:1px solid rgba(255,255,255,0.06);}
+.exec-item:last-child{border-right:none;}
+.exec-el{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.35);margin-bottom:6px;}
+.exec-num{font-size:30px;font-weight:700;color:#fff;line-height:1;}
+.exec-num.accent{color:var(--cyan);}
+.exec-sub{font-size:11px;color:rgba(255,255,255,0.3);margin-top:4px;}
+.kpi-grid{display:grid;gap:1rem;margin-bottom:1.5rem;}
+.kpi-grid-2{grid-template-columns:repeat(2,1fr);}
+.kpi-grid-3{grid-template-columns:repeat(3,1fr);}
+.kpi-grid-4{grid-template-columns:repeat(4,1fr);}
+.kpi{background:#fff;border:1px solid var(--border);border-radius:8px;padding:1.25rem 1.5rem;}
+.kpi.dark{background:var(--teal);border-color:var(--teal);}
+.kpi.dark .kpi-l,.kpi.dark .kpi-v,.kpi.dark .kpi-n{color:#fff;}
+.kpi.accent{background:var(--cyan-dim);border-color:var(--cyan-border);}
+.kpi-l{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:8px;}
+.kpi-v{font-size:28px;font-weight:700;color:var(--ink);line-height:1;margin-bottom:4px;}
+.kpi-n{font-size:11px;color:var(--muted);}
+.kpi-n.good{color:var(--green);}.kpi-n.warn{color:var(--amber);}.kpi-n.bad{color:var(--red);}
+.charts-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;}
+.chart-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:1.25rem 1.5rem;}
+.chart-card.full{margin-bottom:1.5rem;}
+.ct{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:4px;}
+.cs{font-size:11px;color:var(--muted);margin-bottom:0.75rem;}
+.camp-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:0.75rem;}
+.camp-table th{text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--border);}
+.camp-table td{padding:9px 10px;border-bottom:1px solid var(--border-s);color:var(--ink2);}
+.camp-table tr:last-child td{border-bottom:none;}
+.camp-table td:first-child{color:var(--ink);font-weight:500;}
+.camp-table .total-row td{font-weight:600;color:var(--ink);background:var(--surface);border-top:2px solid var(--border);}
+.note{background:var(--cyan-dim);border:1px solid var(--cyan-border);border-radius:8px;padding:1rem 1.25rem;font-size:12px;color:var(--ink2);line-height:1.6;margin-bottom:1.5rem;}
+.tag{display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;}
+.tag.good{background:rgba(0,147,110,0.1);color:var(--green);}
+.tag.warn{background:rgba(196,126,0,0.1);color:var(--amber);}
+.tag.muted{background:var(--faint);color:var(--muted);}
+.li-out-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:2rem;}
+.li-out-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:2rem;text-align:center;}
+.li-out-num{font-size:52px;font-weight:700;color:var(--teal);line-height:1;}
+.li-out-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-top:8px;}
+.li-out-sub{font-size:12px;color:var(--ink2);margin-top:4px;}
+.source-row{display:grid;grid-template-columns:180px 1fr 50px 55px;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-s);}
+.source-row:last-child{border-bottom:none;}
+.source-lbl{font-size:12px;color:var(--ink);}
+.source-bar-wrap{background:var(--faint);border-radius:2px;height:6px;overflow:hidden;}
+.source-bar-fill{height:100%;border-radius:2px;}
+.source-n{font-size:12px;font-weight:600;text-align:right;}
+.source-pct{font-size:11px;color:var(--muted);text-align:right;}
+.city-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-s);}
+.city-row:last-child{border-bottom:none;}
+.city-flag{font-size:16px;width:24px;text-align:center;}
+.city-name{font-size:12px;color:var(--ink);width:140px;}
+.city-bar-wrap{flex:1;background:var(--faint);border-radius:2px;height:6px;overflow:hidden;}
+.city-bar-fill{height:100%;border-radius:2px;background:var(--teal);}
+.city-count{font-size:12px;font-weight:600;width:32px;text-align:right;}
+.city-note{font-size:10px;font-weight:600;width:90px;text-align:right;}
+.mom-grid{display:grid;grid-template-columns:1fr auto 1fr;background:#fff;border:1px solid var(--border);border-radius:8px;margin-bottom:1.5rem;overflow:hidden;}
+.mom-col{padding:1.5rem;}
+.mom-col.prev{background:var(--surface);}
+.mom-col-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:1rem;}
+.mom-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border-s);}
+.mom-row:last-child{border-bottom:none;}
+.mom-row-label{font-size:12px;color:var(--ink2);}
+.mom-row-val{font-size:14px;font-weight:700;color:var(--ink);}
+.mom-middle{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem 1rem;gap:10px;background:#fff;}
+.mom-pill{font-size:11px;font-weight:600;padding:4px 9px;border-radius:20px;}
+.mom-pill.up{background:rgba(0,147,110,0.1);color:var(--green);}
+.mom-pill.down{background:rgba(217,64,64,0.1);color:var(--red);}
+.insight-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem;}
+.insight-card{background:#fff;border:1px solid var(--border);border-top:3px solid var(--cyan);border-radius:8px;padding:1.25rem;}
+.insight-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--teal);margin-bottom:8px;}
+.insight-body{font-size:12.5px;color:var(--ink2);line-height:1.6;}
+.ch-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
+.ch-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:1.25rem;position:relative;overflow:hidden;}
+.ch-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.ch-card.email::before{background:var(--cyan);}
+.ch-card.linkedin-o::before{background:#0A66C2;}
+.ch-card.web::before{background:var(--green);}
+.ch-card.social::before{background:var(--amber);}
+.ch-card-icon{font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px;display:inline-block;padding:3px 8px;border-radius:4px;background:var(--surface);color:var(--ink2);}
+.ch-card-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:6px;}
+.ch-card-stat{font-size:22px;font-weight:700;color:var(--ink);}
+.ch-card-sub{font-size:11px;color:var(--ink2);margin-top:3px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo">
+    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjQwIiB2aWV3Qm94PSIwIDAgMTUwIDQwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNNTcuMDQ0OCAzNC42OTA2SDUxLjU3MDNWMTAuMDA5Nkg1Ni44NzA4VjEyLjQ2MzNDNTguNzMzMiAxMC43MzQgNjEuMzYwOSA5Ljc5MDUzIDY0LjMxNjEgOS43OTA1M0M2Ny45MDc3IDkuNzkwNTMgNzAuODE5OSAxMS4xNjk5IDcyLjUwNjMgMTMuNjQ0MkM3NC41NDI2IDExLjE5MDQgNzcuNzYxOCA5Ljc5MDUzIDgxLjQ2MzkgOS43OTA1M0M4My40MTIyIDkuNzkwNTMgODUuMTY0IDEwLjE4NTUgODYuNjk4OSAxMC45NTA5Qzg5Ljk2MTEgMTIuNTk0MyA5MS42OTI1IDE1Ljk2NDkgOTEuNjkyNSAyMC42MDg0VjM0LjY5MDZIODYuMTczVjIxLjA2ODlDODYuMTczIDE2Ljk3MzggODQuMzMzMiAxNC44NzIxIDgwLjc2NCAxNC44NzIxQzc5LjQyNzYgMTQuODcyMSA3OC4zMzI3IDE1LjEzNCA3Ny4zNjg4IDE1LjY4MjVDNzUuMzc1NSAxNi43Nzc0IDc0LjM2ODYgMTguODc5MSA3NC4zNjg2IDIxLjk4OThWMzQuNjkyN0g2OC44NDkxVjIxLjA3MUM2OC44NDkxIDE2Ljk1MzQgNjcuMDUyMyAxNC44NzQxIDYzLjQ0MDIgMTQuODc0MUM2Mi4xNDg4IDE0Ljg3NDEgNjEuMDMxNCAxNS4xNTg2IDYwLjA5IDE1LjY4NDZDNTguMDc2MiAxNi44MjI1IDU3LjA0NDggMTguOTQ2NyA1Ny4wNDQ4IDIxLjk5MTlWMzQuNjk0N1YzNC42OTA2WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTk4LjI1NzggMy4zOTUxNkM5OC4yNTc4IDEuNDY3MzMgOTkuNzQ3NyAwIDEwMS43NjEgMEMxMDMuNzc1IDAgMTA1LjI0MyAxLjQyNDQxIDEwNS4yNDMgMy4zMDcyMkMxMDUuMjQzIDUuMzIxIDEwMy43NzUgNi43Njc4MyAxMDEuNzYxIDYuNzY3ODNDOTkuNzQ3NyA2Ljc2NzgzIDk4LjI1NzggNS4zMjI5OCA5OC4yNTc4IDMuMzk1MTZaTTEwNC40NzcgMzQuNjkwNkg5OS4wMjMyVjEwLjAwOTZIMTA0LjQ3N1YzNC42OTA2WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTExNy4yODkgMzQuNjkwNkgxMTEuODE0VjEwLjAwOTZIMTE3LjExNVYxMi42NTk4QzExOS4wMiAxMC42NjY0IDEyMS45NTUgOS42NTk1MiAxMjUuNjU1IDkuODEzMDFWMTUuMzUzQzEyNC44MDIgMTUuMTM0IDEyNC43MzYgMTUuMTM0IDEyNC41MTcgMTUuMTM0SDEyNC4wNTdDMTE5Ljc0MyAxNS4xMzQgMTE3LjI4OSAxNy43NjE4IDExNy4yODkgMjIuNDA1M1YzNC42OTA2WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTEzMy4wMTIgMzQuMTQyMkMxMzAuMDc3IDMyLjgyODMgMTI4LjM5MSAzMC4zNTQgMTI4LjM5MSAyNy4zMzEzQzEyOC4zOTEgMjYuMDE3NCAxMjguNzQxIDI0Ljc0NjUgMTI5LjQ0MyAyMy40Nzc3QzEzMC44NjcgMjEuMDY4OSAxMzMuOTMzIDE5Ljg0MzEgMTM4LjQgMTkuODQzMUgxNDQuNTExVjE5LjYyNDFDMTQ0LjUxMSAxNi40NzA0IDE0Mi43ODIgMTQuOTE1IDEzOS4yMTEgMTQuOTE1QzEzNi4xMjIgMTQuOTE1IDEzNC40NTkgMTYuMDk3OSAxMzMuOTc2IDE4LjQ4NDJMMTI5LjE4MSAxNS44MTE0QzEzMC40MjkgMTEuOTc4MiAxMzQuMDIxIDkuODc2NDYgMTM5LjIxMSA5Ljg3NjQ2QzE0Ni4wNDQgOS44NzY0NiAxNTAuMDA4IDEzLjUxMTEgMTUwLjAwOCAxOS43NTMxVjM0LjgxOTZIMTQ0LjYyMlYzMy4xMTA3QzE0Mi44OTIgMzQuMzM2NiAxNDAuNTkyIDM1LjAxNjEgMTM3Ljk4NyAzNS4wMTYxQzEzNi4xNDcgMzUuMDE2MSAxMzQuNDYxIDM0LjcwOSAxMzMuMDE2IDM0LjE0MDFMMTMzLjAxMiAzNC4xNDIyWk0xNDQuNTA5IDI2LjY1MzlWMjQuNDE5MUgxMzguNDg2QzEzNS4yNjcgMjQuNDE5MSAxMzMuODIyIDI1LjM2MDYgMTMzLjgyMiAyNy4yNDM0QzEzMy44MjIgMjkuMTI2MiAxMzUuNDg2IDMwLjI2NjEgMTM4LjQgMzAuMjY2MUMxNDEuMzE0IDMwLjI2NjEgMTQzLjQxNCAyOS4wNjA2IDE0NC41MTEgMjYuNjUxOUwxNDQuNTA5IDI2LjY1MzlaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMzkuMTIwNCA3Ljc5NTE5QzM4LjgzMTggNi4yNjIzNCAzOC4xNzI5IDQuOTQ0NDIgMzYuNTk5MSAzLjU0MjU1QzMwLjk3OTMgLTEuNDYzMjUgMjMuNjIgMy4xNDM0NiAxOS42Mzc1IDcuODE5NzdDMTUuNjU0OSAzLjE0MTQxIDguMjkzNTkgLTEuNDYzMjUgMi42NzU4NyAzLjU0MjU1QzEuMTAyMDkgNC45NDQ0MiAwLjQ0MzExIDYuMjYyMzQgMC4xNTQ1NSA3Ljc5NTE5QzAuMDIxNTI1NCA4LjUwNTM0IC0wLjAyMzUwMDYgOS4yMjE2MSAwLjAxMTI5MDMgOS45MzU4NUMwLjAzOTk0MTcgMTUuNzU0MSAwLjA3Njc3OTYgMjcuODA2MiAwLjA1MDE3NDggMzEuNzY0MUMwLjA1MDE3NDggMzEuOTgxMSAwLjA2MDM5OTQgMzIuMTk4IDAuMDkzMTQzOSAzMi40MTI5QzEuNDA3MDEgNDAuODY5MSAxMi4zNDk4IDQyLjg0MiAxNi42NjggMzUuMzM3NEMxOC41NDg3IDMyLjA2NyAxNy45NTUyIDI1LjYyMDUgMTcuOTU1MiAyNS42MjA1QzE3Ljk2MTQgMjUuNDgzMyAxNy44NTQ5IDIxLjkyMDMgMTUuNDgxIDE4LjEzODNDMTMuNTE2MyAxNS4wMDkyIDEwLjI4MDggMTQuNDEzNiA3Ljg1MTUzIDEyLjIxMzZDNi4xMjYzMSAxMC42NTAxIDYuNTk5MDYgOC4zMzU1MiA4LjQ0MDkzIDguMDQ5MDFDOS4wNjUxMiA3Ljk1MjgyIDkuNzAxNTggOC4xMzcwMSAxMC4yMTEyIDguNTA5NDhDMTEuOTQ0NiA5Ljc3NjI4IDEzLjYyMjcgMTEuMTEwNiAxNS4wNjc2IDEyLjcxOTFDMTYuOTg5MyAxNC44NTk4IDE4LjYyMDQgMTcuMzY2OCAxOS41ODIyIDIwLjA4MjVDMTkuNTk0NSAyMC4wOTI4IDE5LjYxMjkgMjAuMDgyNSAxOS42Mzc1IDIwLjA1OEMxOS42NiAyMC4wODI1IDE5LjY4MDUgMjAuMDkyOCAxOS42OTI3IDIwLjA4MjVDMjAuNjU2NiAxNy4zNjY4IDIyLjI4NTcgMTQuODU5OCAyNC4yMDc0IDEyLjcxOTFDMjUuNjUwMiAxMS4xMTI2IDI3LjMyODMgOS43NzYyOCAyOS4wNjM4IDguNTA5NDhDMjkuNTc1NCA4LjEzNzAxIDMwLjIwOTggNy45NTA3OCAzMC44MzYxIDguMDQ5MDFDMzIuNjggOC4zMzU1MiAzMy4xNTI3IDEwLjY1MDEgMzEuNDI1NSAxMi4yMTM2QzI4Ljk5ODMgMTQuNDEzNiAyNS43NjA3IDE1LjAwNzIgMjMuNzk2IDE4LjEzODNDMjEuNDI0MSAyMS45MjAzIDIxLjMxNTYgMjUuNDg1NCAyMS4zMjE4IDI1LjYyMDVDMjEuMzIxOCAyNS42MjA1IDIwLjcyNjIgMzIuMDY3IDIyLjYwOSAzNS4zMzc0QzI2LjkyNzIgNDIuODQyIDM3Ljg3IDQwLjg2OTEgMzkuMTgzOCAzMi40MTI5QzM5LjIxNjYgMzIuMTk4IDM5LjIyODkgMzEuOTgxMSAzOS4yMjY4IDMxLjc2NDFDMzkuMTk4MiAyNy44MDQxIDM5LjIzNzEgMTUuNzU0MSAzOS4yNjU3IDkuOTM1ODVDMzkuMzAwNSA5LjIyMTYxIDM5LjI1NTUgOC41MDUzNCAzOS4xMjI0IDcuNzk1MTlIMzkuMTIwNFpNMTEuMjc1NCAyNC40NThMMTEuNDY1NyAyNS4yODY5QzExLjU1MTYgMjYuODg5MyAxMS41MTI4IDI5LjU4MDUgMTEuMzk2MSAzMC42NTI4QzExLjA5MTIgMzMuNDYwNyA4LjA5NTA3IDM0LjA4NDkgNy4wMjA2NCAzMS45NDgzQzYuODE4MDQgMzEuNTQ1MSA2LjczMDA0IDMxLjA5NDkgNi43MzAwNCAzMC42NDQ2VjE5LjczMjZDNi42ODkxMSAxOS43MDYgNi42NTAyMiAxOS42Nzk0IDYuNjExMzQgMTkuNjUwOEM4LjQ1NzMgMjAuOTMxOSAxMC45MDI5IDIxLjcwNzUgMTEuMjc1NCAyNC40NjAxVjI0LjQ1OFpNMzIuNTQyOSAzMC42NDI2QzMyLjU0MjkgMzEuMDkyOSAzMi40NTQ5IDMxLjU0MzEgMzIuMjUyMyAzMS45NDYzQzMxLjE3NzggMzQuMDgyOSAyOC4xODE3IDMzLjQ1ODcgMjcuODc2OCAzMC42NTA4QzI3Ljc2MDEgMjkuNTc4NSAyNy43MjEzIDI2Ljg4NzIgMjcuODA3MiAyNS4yODQ4TDI3Ljk5NzUgMjQuNDU2QzI4LjM2OCAyMS43MDM0IDMwLjgxNTYgMjAuOTI3OCAzMi42NjE2IDE5LjY0NjdDMzIuNjIyNyAxOS42NzMzIDMyLjU4MTggMTkuNzAxOSAzMi41NDA4IDE5LjcyODVWMzAuNjQwNUwzMi41NDI5IDMwLjY0MjZaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMjA0XzMyMSkiLz4KPHBhdGggZD0iTTM5LjIyMjcgMzEuMDQzN0gzMi41NDQ5VjE5LjcyODRDMzIuNTgzOCAxOS43MDE4IDMyLjYyNDcgMTkuNjc1MiAzMi42NjM2IDE5LjY0NjZDMzQuNTYyOCAxOC4zMjg2IDM2LjY5MzIgMTYuNjQwMiAzNy45MzU1IDE0LjQ5NzVMMzguMzk4IDEzLjQ3NjNDMzguOTA3NiAxMi4zNTQ4IDM5LjIwNDMgMTEuMTUxNSAzOS4yNjU3IDkuOTMzNzhDMzkuMjM5MSAxNS40MzQ4IDM5LjIwNDMgMjYuNTAyNCAzOS4yMjI3IDMxLjA0MTZWMzEuMDQzN1oiIGZpbGw9InVybCgjcGFpbnQxX2xpbmVhcl8yMDRfMzIxKSIvPgo8cGF0aCBkPSJNMC4wNTI3NDcyIDMxLjA0MzdINi43MzA1NlYxOS43Mjg0QzYuNjkxNjggMTkuNzAxOCA2LjY1MDc1IDE5LjY3NTIgNi42MTE4NiAxOS42NDY2QzQuNzEyNjkgMTguMzI4NiAyLjU4MjI1IDE2LjY0MDIgMS4zNDAwMSAxNC40OTc1TDAuODc3NDkxIDEzLjQ3NjNDMC4zNjc5MDYgMTIuMzU0OCAwLjA3MTE2MTQgMTEuMTUxNSAwLjAwOTc2NTYyIDkuOTMzNzhDMC4wMzYzNzA1IDE1LjQzNDggMC4wNzExNjU5IDI2LjUwMjQgMC4wNTI3NDcyIDMxLjA0MTZWMzEuMDQzN1oiIGZpbGw9InVybCgjcGFpbnQyX2xpbmVhcl8yMDRfMzIxKSIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJwYWludDBfbGluZWFyXzIwNF8zMjEiIHgxPSIxOS42Mzc1IiB5MT0iNi43OTY1MiIgeDI9IjE5LjYzNzUiIHkyPSI0MC41NjAxIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CjxzdG9wIHN0b3AtY29sb3I9IiMwMENBRDgiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMDA1MzYwIi8+CjwvbGluZWFyR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0icGFpbnQxX2xpbmVhcl8yMDRfMzIxIiB4MT0iMzUuOTAzMyIgeTE9IjMwLjc1NzIiIHgyPSIzNS45MDMzIiB5Mj0iMTYuODMwNiIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjMDI3MzgwIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzAwNTM2MCIvPgo8L2xpbmVhckdyYWRpZW50Pgo8bGluZWFyR3JhZGllbnQgaWQ9InBhaW50Ml9saW5lYXJfMjA0XzMyMSIgeDE9IjMuMzcyMjEiIHkxPSIzMC44Nzc5IiB4Mj0iMy4zNzIyMSIgeTI9IjE4LjY1ODEiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KPHN0b3Agc3RvcC1jb2xvcj0iIzAyNzM4MCIvPgo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMwMDUzNjAiLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4=" alt="Mira" style="height:26px;">
+  </div>
+  <div class="topbar-meta">Growth Analytics - May 2026</div>
+</div>
+
+<div class="tabs-bar">
+  <button class="tab-btn active" onclick="openTab('overview',this)">Overview</button>
+  <button class="tab-btn" onclick="openTab('partner',this)">Research Partner Outreach</button>
+  <button class="tab-btn" onclick="openTab('survey',this)">Survey Respondent Outreach</button>
+  <button class="tab-btn" onclick="openTab('sales',this)">Email Sales Outreach</button>
+  <button class="tab-btn" onclick="openTab('liout',this)">LinkedIn Outreach</button>
+  <button class="tab-btn" onclick="openTab('website',this)">Website</button>
+  <button class="tab-btn" onclick="openTab('social',this)">LinkedIn Social Media</button>
+</div>
+
+<!-- ======= OVERVIEW ======= -->
+<section id="tab-overview" class="tab-panel active">
+<div class="page">
+  <div class="page-hero">
+    <div class="eyebrow">May 2026 - All Channels</div>
+    <h1>Mira Growth Report</h1>
+    <p>1-31 May 2026 - Email Outreach - LinkedIn Outreach - Website - LinkedIn Social Media</p>
+  </div>
+
+  <div class="exec-strip">
+    <div class="exec-item">
+      <div class="exec-el">Demos Booked</div>
+      <div class="exec-num accent">3</div>
+      <div class="exec-sub">from Email Sales Outreach</div>
+    </div>
+    <div class="exec-item">
+      <div class="exec-el">Contacts Reached</div>
+      <div class="exec-num">491<small> total</small></div>
+      <div class="exec-sub">391 email + 100 LinkedIn</div>
+    </div>
+    <div class="exec-item">
+      <div class="exec-el">Website Sessions</div>
+      <div class="exec-num">540</div>
+      <div class="exec-sub">420 active users</div>
+    </div>
+    <div class="exec-item">
+      <div class="exec-el">LinkedIn Impressions</div>
+      <div class="exec-num">3,707</div>
+      <div class="exec-sub">8 posts - 629 clicks</div>
+    </div>
+  </div>
+
+  <div class="sec-label">Channel Summary</div>
+  <div class="ch-summary">
+    <div class="ch-card email">
+      <div class="ch-card-icon">Email</div>
+      <div class="ch-card-label">Email Outreach</div>
+      <div class="ch-card-stat">1,350</div>
+      <div class="ch-card-sub">emails sent - 3 campaigns types</div>
+    </div>
+    <div class="ch-card linkedin-o">
+      <div class="ch-card-icon">LinkedIn</div>
+      <div class="ch-card-label">LinkedIn Outreach</div>
+      <div class="ch-card-stat">30%</div>
+      <div class="ch-card-sub">acceptance rate - 100 sent</div>
+    </div>
+    <div class="ch-card web">
+      <div class="ch-card-icon">Web</div>
+      <div class="ch-card-label">Website</div>
+      <div class="ch-card-stat">540</div>
+      <div class="ch-card-sub">sessions - 70% from Switzerland</div>
+    </div>
+    <div class="ch-card social">
+      <div class="ch-card-icon">Social</div>
+      <div class="ch-card-label">LinkedIn Social</div>
+      <div class="ch-card-stat">3,707</div>
+      <div class="ch-card-sub">impressions - 24 new followers</div>
+    </div>
+  </div>
+
+  <div class="sec-label">Email Breakdown - May 2026</div>
+  <div class="chart-card full">
+    <div class="ct">All Email Campaigns - Combined View</div>
+    <div class="cs">Three distinct email tracks running simultaneously in May</div>
+    <table class="camp-table">
+      <thead>
+        <tr>
+          <th>Campaign Type</th><th>Leads</th><th>Emails</th><th>Open Rate</th><th>Clicks</th><th>CTR</th><th>Positive</th><th>Outcome</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Research Partner Outreach</td>
+          <td>54</td><td>119</td><td>53.70%</td><td>9</td><td>16.67%</td>
+          <td><span class="tag good">5 partners</span></td>
+          <td>Partnership leads</td>
+        </tr>
+        <tr>
+          <td>Survey Respondent Outreach</td>
+          <td>87</td><td>232</td><td>48.28%</td><td>17</td><td>19.54%</td>
+          <td><span class="tag good">10 filled</span></td>
+          <td>Survey completions</td>
+        </tr>
+        <tr>
+          <td>Email Sales Outreach</td>
+          <td>250</td><td>999</td><td>59.15%</td><td>28</td><td>10.91%</td>
+          <td><span class="tag good">3 demos</span></td>
+          <td>Demo bookings</td>
+        </tr>
+        <tr class="total-row">
+          <td>Total</td>
+          <td>391</td><td>1,350</td><td>~54%</td><td>54</td><td>~14%</td><td>—</td><td>3 demos booked</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec-label">Key Takeaways - May 2026</div>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-title">Email Open Rates Strong</div>
+      <div class="insight-body">All three email tracks achieved 48-59% open rates - well above industry benchmarks. Research Partner Outreach had the highest open rate (53.7%) and the strongest positive response rate (9.3% of leads replied positively).</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-title">LinkedIn Outreach Promising</div>
+      <div class="insight-body">30% connection acceptance rate on 100 requests is solid for cold outreach. With 30 messages sent to accepted connections, this channel needs more follow-through volume to measure conversion properly.</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-title">Website Traffic Dipped vs April</div>
+      <div class="insight-body">Sessions dropped from 640 (April) to 540 (May), -16%. Switzerland still accounts for 70% of real traffic (Zurich: 221 users). The May 14 and May 27 spikes suggest LinkedIn posts and email campaigns drive bursts of direct traffic.</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ======= RESEARCH PARTNER OUTREACH ======= -->
+<section id="tab-partner" class="tab-panel">
+<div class="page">
+  <div class="page-hero">
+    <div class="eyebrow">Email Outreach - May 2026</div>
+    <h1>Research Partner Outreach</h1>
+    <p>Outreach to organizations invited to co-author or collaborate on the industry report</p>
+  </div>
+
+  <div class="kpi-grid kpi-grid-4">
+    <div class="kpi">
+      <div class="kpi-l">Leads Contacted</div>
+      <div class="kpi-v">54</div>
+      <div class="kpi-n">1 campaign - 3/3 sequence complete</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-l">Emails Sent</div>
+      <div class="kpi-v">119</div>
+      <div class="kpi-n good">53.70% open rate</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-l">Clicks / CTR</div>
+      <div class="kpi-v">9</div>
+      <div class="kpi-n">16.67% CTR</div>
+    </div>
+    <div class="kpi dark">
+      <div class="kpi-l">Positive Replies</div>
+      <div class="kpi-v">5</div>
+      <div class="kpi-n">9.3% of leads - partnership interest</div>
+    </div>
+  </div>
+
+  <div class="sec-label">Campaign Details</div>
+  <div class="chart-card full">
+    <div class="ct">Campaign 1 - Research Partner Outreach</div>
+    <div class="cs">Single campaign - full sequence completed (3/3 steps)</div>
+    <table class="camp-table">
+      <thead>
+        <tr><th>Metric</th><th>Value</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Leads Imported</td><td>54</td><td>Targeted organizations for report partnership</td></tr>
+        <tr><td>Emails Sent</td><td>119</td><td>Average 2.2 emails per lead</td></tr>
+        <tr><td>Open Rate</td><td>53.70%</td><td>Strongest open rate across all May campaigns</td></tr>
+        <tr><td>Clicks</td><td>9</td><td>16.67% CTR</td></tr>
+        <tr><td>Total Replies</td><td>14</td><td>25.9% reply rate</td></tr>
+        <tr><td>Auto-replies</td><td>4</td><td>Out-of-office or automated</td></tr>
+        <tr><td>Negative Replies</td><td>5</td><td>Not interested / declined</td></tr>
+        <tr><td>Positive Replies</td><td>5</td><td><span class="tag good">9.3% positive response rate</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="charts-2">
+    <div class="chart-card">
+      <div class="ct">Reply Breakdown</div>
+      <div class="cs">14 total replies - distribution by type</div>
+      <div class="ch"><canvas id="partnerReplies" height="200"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="ct">Funnel Performance</div>
+      <div class="cs">Lead-to-positive conversion for partnership outreach</div>
+      <div style="margin-top:1.25rem;">
+        <div style="margin-bottom:1rem;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:var(--ink2);">Leads contacted</span><span style="font-size:13px;font-weight:700;">54</span></div>
+          <div style="background:var(--teal);height:8px;border-radius:4px;width:100%;"></div>
+        </div>
+        <div style="margin-bottom:1rem;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:var(--ink2);">Opened email</span><span style="font-size:13px;font-weight:700;">29 (54%)</span></div>
+          <div style="background:var(--teal-mid);height:8px;border-radius:4px;width:54%;"></div>
+        </div>
+        <div style="margin-bottom:1rem;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:var(--ink2);">Clicked link</span><span style="font-size:13px;font-weight:700;">9 (17%)</span></div>
+          <div style="background:var(--cyan);height:8px;border-radius:4px;width:17%;"></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:var(--ink2);">Positive reply</span><span style="font-size:13px;font-weight:700;color:var(--green);">5 (9.3%)</span></div>
+          <div style="background:var(--green);height:8px;border-radius:4px;width:9.3%;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Strong result for cold outreach:</strong> A 9.3% positive response rate on cold partnership outreach is significantly above average. 5 organizations expressed interest in collaborating on the report - these leads should be followed up immediately with a concrete proposal outlining co-authorship terms, data sharing, and timeline.
+  </div>
+</div>
+</section>
+
+<!-- ======= SURVEY RESPONDENT OUTREACH ======= -->
+<section id="tab-survey" class="tab-panel">
+<div class="page">
+  <div class="page-hero">
+    <div class="eyebrow">Email Outreach - May 2026</div>
+    <h1>Survey Respondent Outreach</h1>
+    <p>Outreach inviting medical practices to participate and fill in the industry report survey</p>
+  </div>
+
+  <div class="kpi-grid kpi-grid-4">
+    <div class="kpi">
+      <div class="kpi-l">Total Leads</div>
+      <div class="kpi-v">87</div>
+      <div class="kpi-n">3 campaigns - 3/3 sequence each</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-l">Emails Sent</div>
+      <div class="kpi-v">232</div>
+      <div class="kpi-n good">48.28% open rate (all campaigns)</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-l">Total Clicks</div>
+      <div class="kpi-v">17</div>
+      <div class="kpi-n">19.54% avg CTR</div>
+    </div>
+    <div class="kpi dark">
+      <div class="kpi-l">Survey Filled</div>
+      <div class="kpi-v">10</div>
+      <div class="kpi-n">Confirmed survey completions</div>
+    </div>
+  </div>
+
+  <div class="sec-label">Campaign Breakdown</div>
+  <div class="chart-card full">
+    <table class="camp-table">
+      <thead>
+        <tr><th>Campaign</th><th>Leads</th><th>Emails</th><th>Open Rate</th><th>Clicks</th><th>CTR</th><th>Auto</th><th>Negative</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Campaign 1</td><td>29</td><td>76</td><td>48.28%</td><td>5</td><td>17.24%</td><td>2</td><td>0</td></tr>
+        <tr><td>Campaign 2</td><td>29</td><td>83</td><td>48.28%</td><td>4</td><td>13.79%</td><td>0</td><td>0</td></tr>
+        <tr><td>Campaign 3</td><td>29</td><td>73</td><td>48.28%</td><td>8</td><td><strong>27.59%</strong></td><td>2</td><td>0</td></tr>
+        <tr class="total-row"><td>Total</td><td>87</td><td>232</td><td>48.28%</td><td>17</td><td>19.54%</td><td>4</td><td>0</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="chart-card full">
+    <div class="ct">CTR by Campaign</div>
+    <div class="cs">Campaign 3 leads with 27.6% CTR</div>
+    <div class="ch"><canvas id="surveyCtR" height="200"></canvas></div>
+  </div>
+
+  <div class="note">
+    <strong>10 confirmed survey completions</strong> from this outreach - a solid response for a cold survey ask. Zero negative replies across all 3 campaigns means no one actively rejected the invitation. Campaign 3 had the highest CTR (27.59%), suggesting its subject line or message resonated better - worth using as the template for future survey outreach.
+  </div>
+</div>
+</section>
+
+<!-- ======= EMAIL SALES OUTREACH ======= -->
+<section id="tab-sales" class="tab-panel">
+<div class="page">
+  <div class="page-hero">
+    <div class="eyebrow">Email Outreach - May 2026</div>
+    <h1>Email Sales Outreach</h1>
+    <p>Sales-focused campaigns targeting Swiss medical practices for Mira demo bookings</p>
+  </div>
+
+  <div class="kpi-grid kpi-grid-4">
+    <div class="kpi">
+      <div class="kpi-l">Total Leads</div>
+      <div class="kpi-v">250</div>
+      <div class="kpi-n">2 campaigns - 5/5 sequence each</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-l">Emails Sent</div>
+      <div class="kpi-v">999</div>
+      <div class="kpi-n good">59.15% avg open rate</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-l">Clicks / CTR</div>
+      <div class="kpi-v">28</div>
+      <div class="kpi-n">10.91% CTR</div>
+    </div>
+    <div class="kpi dark">
+      <div class="kpi-l">Demos Booked</div>
+      <div class="kpi-v">3</div>
+      <div class="kpi-n">1.2% conversion from leads</div>
+    </div>
+  </div>
+
+  <div class="sec-label">Campaign Comparison</div>
+  <div class="chart-card full">
+    <table class="camp-table">
+      <thead>
+        <tr><th>Campaign</th><th>Leads</th><th>Emails</th><th>Sequence</th><th>Open Rate</th><th>Clicks</th><th>CTR</th><th>Total Replies</th><th>Auto</th><th>Negative</th><th>Positive</th><th>Demos</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>OneDoc Users</td><td>96</td><td>375</td><td>5/5</td><td>49.47%</td><td>9</td><td>9.47%</td><td>19</td><td>17</td><td>2</td><td>0</td><td>-</td>
+        </tr>
+        <tr>
+          <td>General Campaign</td><td>154</td><td>624</td><td>5/5</td><td>68.83%</td><td>19</td><td>12.34%</td><td>26</td><td>20</td><td>5</td><td>1</td><td>3</td>
+        </tr>
+        <tr class="total-row">
+          <td>Total</td><td>250</td><td>999</td><td>-</td><td>59.15%</td><td>28</td><td>10.91%</td><td>45</td><td>37</td><td>7</td><td>1</td><td>3</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="charts-2">
+    <div class="chart-card">
+      <div class="ct">Open Rate Comparison</div>
+      <div class="cs">General Campaign significantly outperforms OneDoc Users</div>
+      <div class="ch"><canvas id="salesOpen" height="210"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="ct">Reply Quality Breakdown</div>
+      <div class="cs">45 total replies - most are auto-replies</div>
+      <div class="ch"><canvas id="salesReplies" height="210"></canvas></div>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>General Campaign outperforms OneDoc Users on every metric.</strong> The 68.83% open rate on General Campaign is exceptional - nearly 20 points above OneDoc Users (49.47%). All 3 demos came from General Campaign. OneDoc Users had 17/19 replies as auto-replies (89%), suggesting this segment has lower real engagement. Consider reducing effort on OneDoc segment and scaling General Campaign approach.
+  </div>
+</div>
+</section>
+
+<!-- ======= LINKEDIN OUTREACH ======= -->
+<section id="tab-liout" class="tab-panel">
+<div class="page">
+  <div class="page-hero">
+    <div class="eyebrow">LinkedIn Outreach - May 2026</div>
+    <h1>LinkedIn Outreach</h1>
+    <p>Cold connection requests and follow-up messages to Swiss medical practice decision-makers</p>
+  </div>
+
+  <div class="li-out-grid">
+    <div class="li-out-card">
+      <div class="li-out-num">100</div>
+      <div class="li-out-label">Connection Requests Sent</div>
+      <div class="li-out-sub">Targeted Swiss healthcare professionals</div>
+    </div>
+    <div class="li-out-card">
+      <div class="li-out-num" style="color:var(--cyan);">30</div>
+      <div class="li-out-label">Requests Accepted</div>
+      <div class="li-out-sub" style="color:var(--green);font-weight:600;">30% acceptance rate</div>
+    </div>
+    <div class="li-out-card">
+      <div class="li-out-num">30</div>
+      <div class="li-out-label">Messages Sent</div>
+      <div class="li-out-sub">Sent to all accepted connections</div>
+    </div>
+  </div>
+
+  <div class="sec-label">Performance Context</div>
+  <div class="charts-2">
+    <div class="chart-card">
+      <div class="ct">Connection Request Funnel</div>
+      <div class="cs">From outreach to conversation</div>
+      <div style="margin-top:1.5rem;">
+        <div style="margin-bottom:1.25rem;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:12px;color:var(--ink2);">Requests sent</span><span style="font-size:15px;font-weight:700;">100</span></div>
+          <div style="background:var(--teal);height:10px;border-radius:5px;width:100%;"></div>
+        </div>
+        <div style="margin-bottom:1.25rem;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:12px;color:var(--ink2);">Accepted</span><span style="font-size:15px;font-weight:700;color:var(--cyan);">30 (30%)</span></div>
+          <div style="background:var(--cyan);height:10px;border-radius:5px;width:30%;"></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:12px;color:var(--ink2);">Messaged</span><span style="font-size:15px;font-weight:700;">30 (100% of accepted)</span></div>
+          <div style="background:var(--teal-mid);height:10px;border-radius:5px;width:30%;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="ct">Benchmark Context</div>
+      <div class="cs">How May results compare to LinkedIn averages</div>
+      <div style="margin-top:1rem;display:flex;flex-direction:column;gap:1rem;">
+        <div style="border-left:3px solid var(--green);padding-left:14px;">
+          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:4px;">Acceptance Rate</div>
+          <div style="font-size:13px;color:var(--ink);line-height:1.5;">30% achieved vs. 15-25% industry average for cold outreach. Above benchmark - targeting and profile positioning are working.</div>
+        </div>
+        <div style="border-left:3px solid var(--amber);padding-left:14px;">
+          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:4px;">Volume Note</div>
+          <div style="font-size:13px;color:var(--ink);line-height:1.5;">100 requests/month is a conservative starting volume. LinkedIn allows up to ~20-25 per week before triggering limits. Response data from the 30 messages sent is not yet tracked - follow-up required.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Next step:</strong> Track reply rates on the 30 messages sent. Without reply data, it is not possible to measure message quality or conversion. Add a response tracking column in the outreach CRM. Consider A/B testing message copy - one version focused on the industry report, one on a demo invitation - to identify which angle converts accepted connections into conversations.
+  </div>
+</div>
+</section>
+
+<!-- ======= WEBSITE ======= -->
+<section id="tab-website" class="tab-panel">
+<div class="page">
+  <div class="page-hero">
+    <div class="eyebrow">GA4 - May 2026</div>
+    <h1>Website Analytics</h1>
+    <p>mira-ai.ch - 1-31 May 2026 - with April 2026 comparison</p>
+  </div>
+
+  <div class="sec-label">April vs May - Month-over-Month</div>
+  <div class="mom-grid">
+    <div class="mom-col prev">
+      <div class="mom-col-label">April 2026</div>
+      <div class="mom-row"><span class="mom-row-label">Sessions</span><span class="mom-row-val">640</span></div>
+      <div class="mom-row"><span class="mom-row-label">Active Users</span><span class="mom-row-val">557</span></div>
+      <div class="mom-row"><span class="mom-row-label">New Users</span><span class="mom-row-val">628</span></div>
+      <div class="mom-row"><span class="mom-row-label">Direct Traffic</span><span class="mom-row-val">~90%</span></div>
+    </div>
+    <div class="mom-middle">
+      <span class="mom-pill down">-15.6%</span>
+      <span class="mom-pill down">-24.6%</span>
+      <span class="mom-pill down">-30.4%</span>
+      <span class="mom-pill" style="background:var(--faint);color:var(--muted);">~same</span>
+    </div>
+    <div class="mom-col">
+      <div class="mom-col-label">May 2026</div>
+      <div class="mom-row"><span class="mom-row-label">Sessions</span><span class="mom-row-val">540</span></div>
+      <div class="mom-row"><span class="mom-row-label">Active Users</span><span class="mom-row-val">420</span></div>
+      <div class="mom-row"><span class="mom-row-label">New Users</span><span class="mom-row-val">437</span></div>
+      <div class="mom-row"><span class="mom-row-label">Direct Traffic</span><span class="mom-row-val">80.4%</span></div>
+    </div>
+  </div>
+
+  <div class="kpi-grid kpi-grid-4">
+    <div class="kpi"><div class="kpi-l">Sessions</div><div class="kpi-v">540</div><div class="kpi-n bad">-15.6% vs April</div></div>
+    <div class="kpi"><div class="kpi-l">Active Users</div><div class="kpi-v">420</div><div class="kpi-n bad">-24.6% vs April</div></div>
+    <div class="kpi"><div class="kpi-l">New Users</div><div class="kpi-v">437</div><div class="kpi-n bad">-30.4% vs April</div></div>
+    <div class="kpi"><div class="kpi-l">Avg Session</div><div class="kpi-v">64s</div><div class="kpi-n">63.7 sec average duration</div></div>
+  </div>
+
+  <div class="sec-label">Traffic Sources - May 2026</div>
+  <div class="chart-card full">
+    <div class="ct">Sessions by Source</div>
+    <div class="cs">540 total sessions - direct traffic still dominates</div>
+    <div style="margin-top:1rem;">
+      <div class="source-row">
+        <span class="source-lbl">Direct</span>
+        <div class="source-bar-wrap"><div class="source-bar-fill" style="width:80.4%;background:var(--teal);"></div></div>
+        <span class="source-n">434</span>
+        <span class="source-pct">80.4%</span>
+      </div>
+      <div class="source-row">
+        <span class="source-lbl">Google Organic</span>
+        <div class="source-bar-wrap"><div class="source-bar-fill" style="width:9.3%;background:var(--cyan);"></div></div>
+        <span class="source-n">50</span>
+        <span class="source-pct">9.3%</span>
+      </div>
+      <div class="source-row">
+        <span class="source-lbl">Teams CDN (bot)</span>
+        <div class="source-bar-wrap"><div class="source-bar-fill" style="width:4.6%;background:var(--faint);"></div></div>
+        <span class="source-n">25</span>
+        <span class="source-pct">4.6%</span>
+      </div>
+      <div class="source-row">
+        <span class="source-lbl">LinkedIn referral</span>
+        <div class="source-bar-wrap"><div class="source-bar-fill" style="width:2.4%;background:#0A66C2;"></div></div>
+        <span class="source-n">13</span>
+        <span class="source-pct">2.4%</span>
+      </div>
+      <div class="source-row">
+        <span class="source-lbl">Bing Organic</span>
+        <div class="source-bar-wrap"><div class="source-bar-fill" style="width:1.5%;background:var(--muted);"></div></div>
+        <span class="source-n">8</span>
+        <span class="source-pct">1.5%</span>
+      </div>
+      <div class="source-row">
+        <span class="source-lbl">mdai.ch referral</span>
+        <div class="source-bar-wrap"><div class="source-bar-fill" style="width:0.6%;background:var(--green);"></div></div>
+        <span class="source-n">3</span>
+        <span class="source-pct">0.6%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="charts-2">
+    <div class="chart-card">
+      <div class="ct">New Users - Daily Trend</div>
+      <div class="cs">Two notable spikes: May 14 (+56) and May 27 (+58)</div>
+      <div class="ch"><canvas id="webUsers" height="220"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="ct">Active Users by Country</div>
+      <div class="cs">Switzerland dominates at 70% - Serbia likely internal team</div>
+      <div class="ch"><canvas id="webCountries" height="220"></canvas></div>
+    </div>
+  </div>
+
+  <div class="sec-label">Geography - Active Users by City</div>
+  <div class="charts-2">
+    <div class="chart-card">
+      <div class="ct">Top Cities - May 2026</div>
+      <div class="cs">Zurich leads with 221 users - 53% of all traffic</div>
+      <div style="margin-top:0.75rem;">
+        <div class="city-row">
+          <div class="city-flag">🇨🇭</div>
+          <div class="city-name">Zurich</div>
+          <div class="city-bar-wrap"><div class="city-bar-fill" style="width:100%;"></div></div>
+          <div class="city-count">221</div>
+          <div class="city-note" style="color:var(--green);font-size:10px;font-weight:600;">Target market</div>
+        </div>
+        <div class="city-row">
+          <div class="city-flag">🇷🇸</div>
+          <div class="city-name">Belgrade</div>
+          <div class="city-bar-wrap"><div class="city-bar-fill" style="width:6.8%;"></div></div>
+          <div class="city-count">15</div>
+          <div class="city-note" style="color:var(--muted);font-size:10px;">Team</div>
+        </div>
+        <div class="city-row">
+          <div class="city-flag">🇮🇪</div>
+          <div class="city-name">Dublin</div>
+          <div class="city-bar-wrap"><div class="city-bar-fill" style="width:5%;"></div></div>
+          <div class="city-count">11</div>
+          <div class="city-note"></div>
+        </div>
+        <div class="city-row">
+          <div class="city-flag">🇨🇭</div>
+          <div class="city-name">Switzerland (Other)</div>
+          <div class="city-bar-wrap"><div class="city-bar-fill" style="width:5%;"></div></div>
+          <div class="city-count">11</div>
+          <div class="city-note"></div>
+        </div>
+        <div class="city-row">
+          <div class="city-flag">🇳🇱</div>
+          <div class="city-name">Amsterdam</div>
+          <div class="city-bar-wrap"><div class="city-bar-fill" style="width:4.1%;"></div></div>
+          <div class="city-count">9</div>
+          <div class="city-note"></div>
+        </div>
+        <div class="city-row">
+          <div class="city-flag">🇨🇭</div>
+          <div class="city-name">Bulle</div>
+          <div class="city-bar-wrap"><div class="city-bar-fill" style="width:3.6%;"></div></div>
+          <div class="city-count">8</div>
+          <div class="city-note" style="color:var(--green);font-size:10px;font-weight:600;">Target market</div>
+        </div>
+        <div class="city-row">
+          <div class="city-flag">🇬🇧</div>
+          <div class="city-name">London</div>
+          <div class="city-bar-wrap"><div class="city-bar-fill" style="width:3.2%;"></div></div>
+          <div class="city-count">7</div>
+          <div class="city-note"></div>
+        </div>
+        <div class="city-row">
+          <div class="city-flag">🇩🇪</div>
+          <div class="city-name">Frankfurt am Main</div>
+          <div class="city-bar-wrap"><div class="city-bar-fill" style="width:2.3%;"></div></div>
+          <div class="city-count">5</div>
+          <div class="city-note"></div>
+        </div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="ct">Traffic Source Mix</div>
+      <div class="cs">By sessions - excluding Teams CDN bot traffic</div>
+      <div class="ch"><canvas id="webSources" height="220"></canvas></div>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Traffic down vs April but quality holds:</strong> The -16% drop in sessions vs April is notable. Switzerland still accounts for 294/420 active users (70%). LinkedIn now refers with 38% engagement rate - the highest of any source. The May 14 (+56 new users) and May 27 (+58 new users) spikes likely correspond to LinkedIn posts or email campaigns that drove direct visits. Adding UTM parameters to all email links would allow precise attribution of these spikes.
+  </div>
+</div>
+</section>
+
+<!-- ======= LINKEDIN SOCIAL MEDIA ======= -->
+<section id="tab-social" class="tab-panel">
+<div class="page">
+  <div class="page-hero">
+    <div class="eyebrow">LinkedIn Social Media - May 2026</div>
+    <h1>LinkedIn Social Media</h1>
+    <p>Organic content performance - mira-ai.ch company page - with April 2026 comparison</p>
+  </div>
+
+  <div class="sec-label">April vs May - Month-over-Month</div>
+  <div class="mom-grid">
+    <div class="mom-col prev">
+      <div class="mom-col-label">April 2026</div>
+      <div class="mom-row"><span class="mom-row-label">Impressions</span><span class="mom-row-val">2,496</span></div>
+      <div class="mom-row"><span class="mom-row-label">Clicks</span><span class="mom-row-val">419</span></div>
+      <div class="mom-row"><span class="mom-row-label">Reactions</span><span class="mom-row-val">95</span></div>
+      <div class="mom-row"><span class="mom-row-label">Comments</span><span class="mom-row-val">10</span></div>
+      <div class="mom-row"><span class="mom-row-label">New Followers</span><span class="mom-row-val">56</span></div>
+    </div>
+    <div class="mom-middle">
+      <span class="mom-pill up">+48.6%</span>
+      <span class="mom-pill up">+50.1%</span>
+      <span class="mom-pill up">+20.0%</span>
+      <span class="mom-pill" style="background:var(--faint);color:var(--muted);">0%</span>
+      <span class="mom-pill down">-57.1%</span>
+    </div>
+    <div class="mom-col">
+      <div class="mom-col-label">May 2026</div>
+      <div class="mom-row"><span class="mom-row-label">Impressions</span><span class="mom-row-val">3,707</span></div>
+      <div class="mom-row"><span class="mom-row-label">Clicks</span><span class="mom-row-val">629</span></div>
+      <div class="mom-row"><span class="mom-row-label">Reactions</span><span class="mom-row-val">114</span></div>
+      <div class="mom-row"><span class="mom-row-label">Comments</span><span class="mom-row-val">10</span></div>
+      <div class="mom-row"><span class="mom-row-label">New Followers</span><span class="mom-row-val">24</span></div>
+    </div>
+  </div>
+
+  <div class="kpi-grid kpi-grid-4">
+    <div class="kpi"><div class="kpi-l">Total Impressions</div><div class="kpi-v">3,707</div><div class="kpi-n good">+48.6% vs April</div></div>
+    <div class="kpi"><div class="kpi-l">Total Clicks</div><div class="kpi-v">629</div><div class="kpi-n good">+50.1% vs April</div></div>
+    <div class="kpi"><div class="kpi-l">Reactions</div><div class="kpi-v">114</div><div class="kpi-n good">+20.0% vs April</div></div>
+    <div class="kpi dark"><div class="kpi-l">New Followers</div><div class="kpi-v">24</div><div class="kpi-n">-57.1% vs April (56)</div></div>
+  </div>
+
+  <div class="charts-2">
+    <div class="chart-card">
+      <div class="ct">Daily Impressions - May 2026</div>
+      <div class="cs">Peak on May 6 (495) driven by the Verpasste Termine post</div>
+      <div class="ch"><canvas id="liImpressions" height="220"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="ct">April vs May - Key Metrics</div>
+      <div class="cs">Strong growth in impressions and clicks; followers dropped</div>
+      <div class="ch"><canvas id="liMoM" height="220"></canvas></div>
+    </div>
+  </div>
+
+  <div class="sec-label">Post Performance - May 2026</div>
+  <div class="chart-card full">
+    <div class="ct">All 8 Posts - Sorted by Engagement Rate</div>
+    <div class="cs">Carousel and video posts consistently outperform long-form text</div>
+    <table class="camp-table">
+      <thead>
+        <tr><th>Date</th><th>Topic</th><th>Impressions</th><th>Clicks</th><th>Likes</th><th>CTR</th><th>Eng. Rate</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>May 28</td><td>Routineanfragen - reception time</td><td>250</td><td>94</td><td>13</td><td>37.6%</td><td><span class="tag good">43.2%</span></td></tr>
+        <tr><td>May 08</td><td>Allergiesaison carousel 🌼</td><td>387</td><td>152</td><td>12</td><td>39.3%</td><td><span class="tag good">42.6%</span></td></tr>
+        <tr><td>May 14</td><td>Erste Eindruck - Mira demo</td><td>331</td><td>101</td><td>15</td><td>30.5%</td><td><span class="tag good">35.3%</span></td></tr>
+        <tr><td>May 17</td><td>No-Show - long form</td><td>213</td><td>71</td><td>10</td><td>33.3%</td><td><span class="tag good">38.0%</span></td></tr>
+        <tr><td>May 22</td><td>No-Show - short carousel</td><td>108</td><td>22</td><td>5</td><td>20.4%</td><td>25.0%</td></tr>
+        <tr><td>May 12</td><td>Zweiten Arzt - practice growth</td><td>361</td><td>10</td><td>17</td><td>2.8%</td><td>8.0%</td></tr>
+        <tr><td>May 26</td><td>Patienten erwarten - accessibility</td><td>329</td><td>9</td><td>10</td><td>2.7%</td><td>6.1%</td></tr>
+        <tr><td>May 06</td><td>Verpasste Termine - no-shows</td><td>719</td><td>19</td><td>9</td><td>2.6%</td><td>4.2%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="charts-2">
+    <div class="chart-card">
+      <div class="ct">Daily New Followers - May 2026</div>
+      <div class="cs">24 organic followers - spikes on May 7 (+5) and May 8 (+3)</div>
+      <div class="ch"><canvas id="liFollowers" height="210"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="ct">Follower Locations</div>
+      <div class="cs">Total follower base - primarily Swiss metropolitan areas</div>
+      <div class="ch"><canvas id="liLocations" height="210"></canvas></div>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Impressions and clicks up strongly, followers down significantly.</strong> The +48.6% impression growth shows the content is reaching more people. However, new followers dropped from 56 (April) to 24 (May) - content is being consumed but not converting to follows at the same rate. Posts with product demos or carousels (Allergiesaison, Erste Eindruck, Routineanfragen) consistently achieve 35-43% engagement rates, 5-10x higher than long text posts. The May 6 post had the most impressions (719) but the lowest engagement (4.2%) - high reach, low action on pure text posts.
+  </div>
+</div>
+</section>
+
+<script>
+const ready={overview:true};
+function openTab(id,btn){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(!ready[id]){ready[id]=true;initCharts(id);}
+}
+
+const TEAL='#003B44',CYAN='#00CAD8',GREEN='#00936e',RED='#d94040',AMBER='#c47e00',MUTED='#7a9ea5';
+const dfont={family:"'DM Sans',sans-serif",size:11};
+
+function donut(id,labels,data,colors){
+  new Chart(document.getElementById(id),{type:'doughnut',data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:2,borderColor:'#fff'}]},options:{cutout:'65%',plugins:{legend:{position:'bottom',labels:{font:dfont,padding:10,boxWidth:10}}}}});
+}
+function bar(id,labels,data,color,horizontal){
+  new Chart(document.getElementById(id),{type:'bar',data:{labels,datasets:[{data,backgroundColor:color,borderRadius:4}]},options:{indexAxis:horizontal?'y':'x',plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:dfont}},y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:dfont}}}}});
+}
+
+function initCharts(tab){
+  if(tab==='partner'){
+    donut('partnerReplies',['Positive','Negative','Auto-reply'],[5,5,4],[GREEN,RED,MUTED]);
+  }
+  if(tab==='survey'){
+    bar('surveyCtR',['Campaign 1','Campaign 2','Campaign 3'],[17.24,13.79,27.59],[CYAN,CYAN,TEAL]);
+  }
+  if(tab==='sales'){
+    new Chart(document.getElementById('salesOpen'),{type:'bar',data:{labels:['OneDoc Users','General Campaign'],datasets:[{label:'Open Rate %',data:[49.47,68.83],backgroundColor:[CYAN,TEAL],borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%',font:dfont}},x:{grid:{display:false},ticks:{font:dfont}}}}});
+    donut('salesReplies',['Auto-reply','Negative','Positive'],[37,7,1],[MUTED,RED,GREEN]);
+  }
+  if(tab==='website'){
+    const days=['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31'];
+    const newU=[2,1,1,10,7,4,8,9,2,1,9,12,7,56,6,5,1,37,4,31,18,20,27,10,13,31,58,22,18,1,6];
+    new Chart(document.getElementById('webUsers'),{type:'bar',data:{labels:days,datasets:[{data:newU,backgroundColor:newU.map(v=>v>=50?RED:v>=30?AMBER:CYAN),borderRadius:2}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{...dfont,size:9}}},y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:dfont}}}}});
+    bar('webCountries',['Switzerland','USA','Serbia','Germany','Ireland','Netherlands'],
+      [294,39,22,15,11,9],[TEAL,MUTED,MUTED,MUTED,MUTED,MUTED],true);
+    donut('webSources',['Direct','Google Organic','LinkedIn','Bing','Other'],[434,50,16,8,7],[TEAL,CYAN,'#0A66C2',MUTED,GREEN]);
+  }
+  if(tab==='social'){
+    const days=['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31'];
+    const imp=[61,39,144,150,111,495,303,389,74,26,35,245,59,55,186,62,59,213,59,25,25,108,44,34,51,71,237,88,200,34,25];
+    new Chart(document.getElementById('liImpressions'),{type:'line',data:{labels:days,datasets:[{data:imp,borderColor:CYAN,backgroundColor:'rgba(0,202,216,0.08)',fill:true,tension:0.4,pointRadius:2,pointBackgroundColor:CYAN}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{...dfont,size:9}}},y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:dfont}}}}});
+    new Chart(document.getElementById('liMoM'),{type:'bar',data:{labels:['Impressions','Clicks','Reactions','Followers'],datasets:[{label:'April',data:[2496,419,95,56],backgroundColor:'rgba(0,59,68,0.3)',borderRadius:3},{label:'May',data:[3707,629,114,24],backgroundColor:CYAN,borderRadius:3}]},options:{plugins:{legend:{position:'bottom',labels:{font:dfont,boxWidth:10}}},scales:{x:{grid:{display:false},ticks:{font:dfont}},y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:dfont}}}}});
+    const follD=[0,0,1,0,0,1,5,3,1,2,1,1,1,3,1,0,0,0,0,0,2,0,0,0,0,0,0,1,0,1,0];
+    new Chart(document.getElementById('liFollowers'),{type:'bar',data:{labels:days,datasets:[{data:follD,backgroundColor:TEAL,borderRadius:2}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{...dfont,size:9}}},y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:dfont,stepSize:1}}}}});
+    donut('liLocations',['Zürich','Basel','Lucerne','Bern','Serbia','Other'],[43,33,14,5,9,10],[TEAL,CYAN,GREEN,AMBER,'#d94040',MUTED]);
+  }
+}
+
+// init overview (no charts needed)
+</script>
+</body>
+</html>
